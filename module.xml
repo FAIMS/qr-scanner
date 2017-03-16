@@ -9,7 +9,7 @@
 
 <Control f="nodata">
   <Control>
-    <Scan_QR_Code t="button"/>
+    <Scan_QR_Code t="button" lq="Record/Record/ID"/>
   </Control>
   <search/>
 </Control>
@@ -20,52 +20,5 @@
     <Data/>
   </Record>
 </Record>
-
-<logic><![CDATA[
-  void scanQrCode() {
-    scanCode("loadOrCreateEntityFromId()");
-  }
-
-  void loadOrCreateEntityFromId() {
-    String id = getLastScanContents();
-
-    String q = "";
-    q += "SELECT uuid ";
-    q += "  FROM latestnondeletedaentvalue ";
-    q += "  JOIN attributekey USING (attributeid) ";
-    q += " WHERE attributename = 'ID' ";
-    q += "   AND measure       = '{id}'";
-    q = replaceFirst(q, "{id}", id);
-
-    FetchCallback loadOrCreateEntity = new FetchCallback() {
-      onFetch(result) {
-        if (isNull(result) || result.size() == 0) {
-          createRecordFromId(id);
-        } else {
-          String uuid = result.get(0).get(0);
-          loadEntityFrom(uuid);
-        }
-      }
-    };
-
-    fetchAll(q, loadOrCreateEntity);
-  }
-
-  void createRecordFromId(String id) {
-    newRecord();
-  }
-
-  void initRecordId() {
-    String ref     = "Record/Record/ID";
-    String oldCode = getFieldValue(ref);
-    String newCode = getLastScanContents();
-
-    if (isNull(oldCode))
-      setFieldValue(ref, newCode);
-  }
-
-  addOnEvent("Control/Control/Scan_QR_Code", "click",  "scanQrCode()");
-  addOnEvent("Record",                       "create", "initRecordId()");
-]]></logic>
 
 </module>

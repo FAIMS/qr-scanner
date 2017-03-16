@@ -5,6 +5,11 @@ command -v qrencode >/dev/null 2>&1 || {
   exit 1;
 }
 
+command -v display >/dev/null 2>&1 || {
+  echo >&2 "I require imagemagick but it's not installed.  Aborting.";
+  exit 1;
+}
+
 rand_str () {
   local str_len=${1:-4}
 
